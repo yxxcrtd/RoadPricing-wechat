@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <#include "Header.html" />
+    </head>
+
+    <body>
+        <div class="page-content">
+            <#if arrearList?? && 0 < arrearList?size>
+                <#list arrearList as l>
+                    <a href="${request.contextPath}/wx/arrear/${l.id}">
+                        <div class="page-content-main-arrear">
+                            <div class="page-content-main-arrear-left">
+                                <div class="checkbox-wrap">
+                                    <input id="checkbox${l.id}" type="checkbox" name="arrearage" value="${l.arrearsAmount}">
+                                    <label for="checkbox${l.id}"></label>
+                                </div>
+                            </div>
+                            <div class="page-content-main-arrear-right">
+                                <div class="page-content-main-arrear-right-top">
+                                    <div class="page-content-main-arrear-right-top-left"><#if (10 < l.parkingName?length)>${l.parkingName[0..9]}...<#else>${l.parkingName}</#if></div>
+                                    <div class="page-content-main-arrear-right-top-right">${l.arrearsAmount?c}元</div>
+                                </div>
+                                <div class="page-content-main-arrear-right-bottom">
+                                    <div class="arrear_list_left">
+                                        <div class="arrear_list_left_top">入场时间</div>
+                                        <div class="arrear_list_left_bottom">${l.enterTime}</div>
+                                    </div>
+                                    <div class="arrear_list_middle"></div>
+                                    <div class="arrear_list_right">
+                                        <div class="arrear_list_left_top">出场时间</div>
+                                        <div class="arrear_list_left_bottom">${l.exitTime}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </#list>
+            <#else>
+                <div class="arrear_empty"></div>
+                <div class="empty_title">没有欠费记录哦</div>
+            </#if>
+        </div>
+
+        <nav class="arrear_bottom_info">
+            <div id="total">
+                <div id="total_select_all">
+                    <div class="total_select_wrap">
+                        <input id="total_select" type="checkbox" value="0">
+                        <label for="total_select"></label>
+                    </div>
+                    <span class="total_font">全选</span>
+                </div>
+                <div id="total_money"><span class="total_font total_font1">合计：</span><span id="money">￥0</span></div>
+                <div id="total_pay"><a href="${domain}${request.contextPath}/wx/arrear/pay/">去支付</a></div>
+            </div>
+        </nav>
+
+        <#include "Footer.html" />
+        <script type="text/javascript" src="${domain}${request.contextPath}/js/car.js?version=${v}"></script>
+    </body>
+</html>

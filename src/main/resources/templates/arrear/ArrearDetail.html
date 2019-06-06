@@ -1,0 +1,51 @@
+<#assign calRelativeTime = "com.igoosd.util.FreemarkerCalRelativeTime"?new()>
+<!doctype html>
+<html lang="en">
+    <head>
+        <#include "Header.html" />
+        <link rel="stylesheet" href="${domain}${request.contextPath}/css/style.css?version=${v}" />
+    </head>
+
+    <body>
+        <div class="page-content">
+            <#if arrearDetail?? && 0 < arrearDetail?size>
+                <div class="page-content-main">
+                    <div class="page-content-title">车辆欠费信息</div>
+                    <div class="page-content-list">车牌号码：<span class="carNumber">${arrearDetail.carNumber}</span></div>
+                    <div class="page-content-list">泊位编号：${arrearDetail.parkingSpaceCode}</div>
+                    <div class="page-content-list">应收金额：${arrearDetail.chargeAmount} 元</div>
+                    <div class="page-content-list">实收金额：${arrearDetail.realChargeAmount} 元</div>
+                    <div class="page-content-list">出场方式：欠费离场</div>
+                    <div class="page-content-list">
+                        <div class="page-content-list-left">停车场名称：</div>
+                        <div class="page-content-list-right">${arrearDetail.parkingName}</div>
+                    </div>
+                    <div class="page-content-list">
+                        <div class="page-content-list-left">停车场位置：</div>
+                        <div class="page-content-list-right">${arrearDetail.parkingAddress}</div>
+                    </div>
+                    <div class="page-content-list">开始收费员编号：${arrearDetail.enterCollector}</div>
+                    <div class="page-content-list">结束收费员编号：${arrearDetail.exitCollector}</div>
+                    <div class="page-content-list">驶入时间：${arrearDetail.enterTime}</div>
+                    <div class="page-content-list">驶出时间：${arrearDetail.exitTime}</div>
+                    <div class="page-content-list">停车时长：${calRelativeTime(arrearDetail.enterTime, arrearDetail.exitTime)}</div>
+                    <#if arrearDetail.carPictures?? && 0 < arrearDetail.carPictures?size>
+                        <div class="page-content-list">
+                            <div class="page-content-list-left">车辆照片：</div>
+                            <div class="page-content-list-right">
+                                <#list arrearDetail.carPictures as p>
+                                    <a href="${p}"><img src="${p}" width="70" height="70"></a>
+                                </#list>
+                            </div>
+                        </div>
+                    </#if>
+                </div>
+            <#else>
+                <div class="fee_empty"></div>
+                <div class="empty_title">没有停车记录哦</div>
+            </#if>
+        </div>
+        <#include "Footer.html" />
+        <script type="text/javascript" src="${domain}${request.contextPath}/js/car.js?version=${v}"></script>
+    </body>
+</html>

@@ -1,0 +1,119 @@
+<#assign calRelativeTime = "com.hfzycj.util.FreemarkerCalRelativeTime"?new()>
+<!doctype html>
+<html lang="en">
+    <head>
+        <#include "Header.html" />
+    </head>
+
+    <body>
+        <div class="page-content">
+            <form action="#" method="post" class="bindCarNO">
+                <#if map?? && 0 < map?size>
+                    <div id="pay_title">本次应缴</div>
+                    <div id="pay_fee">${map.amount?string.currency}</div>
+                    <div class="redColor">注意：实际缴费金额以车辆驶出时间为准</div>
+                    <hr />
+
+                    <div class="order_info">
+                        <div class="order_title">停车场</div>
+                        <div class="order_value" id="parkName">${map.parkName}</div>
+                    </div>
+                    <div class="order_info">
+                        <div class="order_title">车牌号</div>
+                        <div class="order_value">${map.carNo}</div>
+                    </div>
+                    <div class="order_info">
+                        <div class="order_title">驶入时间</div>
+                        <div class="order_value">${map.inTime}</div>
+                    </div>
+                    <div class="order_info">
+                        <div class="order_title">停车时长</div>
+                        <div class="order_value">${calRelativeTime(map.inTime, .now?string("yyyy-MM-dd HH:mm:ss"))}</div>
+                    </div>
+                    <div class="order_info">
+                        <div class="order_title">总停车费</div>
+                        <div class="order_value">${(map.amount + map.payTotal)?string.currency}</div>
+                    </div>
+                    <div class="order_info">
+                        <div class="order_title">已缴车费</div>
+                        <div class="order_value">${map.payTotal?string.currency}</div>
+                    </div>
+                    <p class="btnable"><a class="btn btn1" onClick="pay(); return false;">立即支付</a></p>
+                <#else>
+                    <h2>暂无缴费信息！</h2>
+                </#if>
+                <@s.formHiddenInput "obj.space_no" />
+                <@s.formHiddenInput "obj.amount" />
+                <@s.formHiddenInput "obj.in_time" />
+                <@s.formHiddenInput "obj.data_type" />
+                <@s.formHiddenInput "obj.park_name" />
+                <@s.formHiddenInput "obj.id" />
+                <@s.formHiddenInput "obj.car_no" />
+            </form>
+        </div>
+
+        <#include "Footer.html" />
+        <script type="text/javascript">
+        function pay() {
+            $.ajax({
+                type : "POST",
+                url : "${domain}${request.contextPath}/pay",
+                dataType : 'json',
+                data : {
+                    "id" : $("#id").val(),
+                    "number" : $("#number").val(),
+                    "totalPrice" : $("#amount").val(),
+                    "space_no" : $("#space_no").val(),
+                    "parkName" : $("#parkName").html(),
+                    "in_time" : $("#in_time").val(),
+                    "data_type" : $("#data_type").val()
+                },
+                cache : false,
+                error : function() {
+                    alert("系统错误，请稍后重试！");
+                },
+                success : function(data) {
+                    var data1 = jQuery.parseJSON(data);
+                    var ts = data1[0].timeStamp;
+                    wx.config({ // debug : true,
+                        appId : data1[0].appId,
+                        nonceStr : data1[0].nonceStr,
+                        timestamp : ts,
+                        signature : data1[0].signature,
+                        jsApiList : [ 'chooseWXPay' ]
+                    });
+                    wx.ready(function() {
+                        wx.chooseWXPay({
+                            appId : data1[0].appId,
+                            nonceStr : data1[0].nonceStr,
+                            timestamp : ts,
+                            package : data1[0].package,
+                            signType : data1[0].signType,
+                            paySign : data1[0].paySign,
+                            complete : function(res) {
+                                if (res.errMsg == "chooseWXPay:ok") {
+                                    alert("缴费成功！");
+                                    window.location.href = data1[0].notify_url;
+                                } else if (res.errMsg == "chooseWXPay:cancel") {
+                                    alert("您已取消支付！");
+                                } else if (res.errMsg == "chooseWXPay:fail") {
+                                    alert("支付失败！");
+                                } else if (res.errMsg == "config:invalid signature") {
+                                    alert("支付签名验证错误，请检查签名正确与否 or 支付授权目录正确与否等！");
+                                }
+                            }
+                        });
+                    });
+                    wx.error(function(res) {
+                        if (res.errMsg == "config:invalid url domain") {
+                            alert("授权目录设置有误！");
+                        } else {
+                            alert("错误信息:" + res.errMsg);
+                        }
+                    });
+                }
+            });
+        }
+        </script>
+    </body>
+</html>

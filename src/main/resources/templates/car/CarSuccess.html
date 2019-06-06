@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <#include "Header.html" />
+        <link rel="stylesheet" href="${domain}${request.contextPath}/css/style.css?version=${v}" />
+    </head>
+
+    <body>
+        <div class="page-content">
+            <form action="${request.contextPath}/wx/car/unbind" method="post" class="bindCarNO">
+                <div><img class="headImg" src="${headimgurl}" onerror="this.src='${request.contextPath}/images/default.png'" width="100"></div>
+                <div class="nickname">${nickname}</div>
+                <div class="bind">
+                    <div class="bind_tips">车牌号：</div>
+                    <div class="bind_number">
+                        <@s.formInput "obj.number1" "maxLength='1' placeholder='皖' onKeyUp='value=value.replace(/[^\\${carNoP}]/g, \"\")'" />
+                        <div class="separator">|</div>
+                        <@s.formInput "obj.number2" "width='5' maxLength='7' placeholder='——————' onKeyUp='value=value.toUpperCase().replace(/[^\\d\\ABCDEFGHJKLMNPQRSTUVWXYZ]/g, \"\")'" />
+                    </div>
+                    <p class="img_hr"><img src="${request.contextPath}/images/hr.png" alt=""></p>
+                    <div class="bind_tips"><p class="btnable"><a class="a_unbind" href="javascript:;">解除绑定</a></p></div>
+                </div>
+                <@s.formHiddenInput "obj.id" />
+                <@s.formHiddenInput "obj.userId" />
+                <@s.formHiddenInput "obj.create_time" />
+            </form>
+        </div>
+        <#include "Footer.html" />
+        <script type="text/javascript" src="${domain}${request.contextPath}/js/car.js?version=${v}"></script>
+    </body>
+</html>

@@ -1,0 +1,93 @@
+server:
+    port: 15441
+
+spring:
+    jpa:
+        generate-ddl: false
+        show-sql: true
+        hibernate:
+            ddl-auto: none
+        properties:
+            hibernate:
+                temp:
+                    use_jdbc_metadata_defaults: false # Fix Postgres JPA Error: Method org.postgresql.jdbc.PgConnection.createClob() is not yet implemented.
+
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://139.198.2.158:15439/road_pricing
+        username: road_pricing
+        password: road_pricing
+        type: com.alibaba.druid.pool.DruidDataSource
+        initialSize: 100 # 初始化时建立物理连接的个数
+        minIdle: 30 # 最小连接池的数量
+        maxActive: 200 # 最大连接池的数量
+        maxWait: 60000 # 获取连接时最大等待时间，单位：毫秒
+        timeBetweenEvictionRunsMillis: 60000 # 配置了maxWait之后，缺省启用公平锁，并发效率会有所下降，如果需要可以通过配置useUnfairLock属性为true使用非公平锁
+        minEvictableIdleTimeMillis: 300000 # 一个连接在池中最小生存的时间，单位：毫秒
+        validationQuery: SELECT 1 # 验证连接有效与否的SQL
+        testWhileIdle: true # 申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效，建议配置为true，不影响性能，并且保证安全性
+        testOnBorrow: false # 申请连接时执行validationQuery检测连接是否有效，如果为true会降低性能
+        testOnReturn: false # 归还连接时执行validationQuery检测连接是否有效，如果为true会降低性能
+        poolPreparedStatements: true # 是否缓存 preparedStatement，也就是PSCache，打开PSCache，并且指定每个连接上PSCache的大小。PSCache对支持游标的数据库性能提升巨大，比如说oracle
+        maxPoolPreparedStatementPerConnectionSize: 20 # 每个连接上PSCache的大小
+        filters: stat,wall,slf4j # 监控统计拦截的filters，去掉后监控界面sql无法统计，wall用于防火墙
+
+    redis:
+        host: 139.198.15.189
+        port: 15435
+        password: legongzhulian
+        pool:
+            max-idle: 20
+            min-idle: 0
+            max-active: 18
+            max-wait: -1
+        timeout: 0
+
+    freemarker:
+        suffix: .html
+        cache: false
+        charset: UTF-8
+        allowRequestOverride: false
+        allowSessionOverride: false
+        checkTemplateLocation: false
+        contentType: text/html
+        exposeRequestAttributes: true # 设定所有request的属性在merge到模板的时候，是否要都添加到model中
+        exposeSessionAttributes: false # 设定所有HttpSession的属性在merge到模板的时候，是否要都添加到model中
+        templateEncoding: UTF-8
+        settings:
+            template_update_delay: 0
+            default_encoding: UTF-8
+            classic_compatible: true
+            locale: zh_CN
+            date_format: yyyy-MM-dd
+            time_format: HH:mm:ss
+            datetime_format: yyyy-MM-dd HH:mm:ss
+            auto_import: spring.ftl as s
+
+    devtools:
+        restart:
+            additional-paths: target/classes/
+
+logging:
+#    file: /Users/young/Desktop/wechat.log
+    level:
+        root: info
+
+# 微信
+wx:
+    domain: http://weixin.igoosd.com
+    app-id: wx77e362383a9c8aea
+    app-secret: df11314bed60c63db80b58b576987939
+    mch-id: 1486878702
+    pay-key: IpTVOOHorKlFfgonLw9Rw83ouuNZF4V2
+    message-template: vzbCttK6e4tNW5UiSSD-wnNtL-s-PDxi8UplsyNxW2w
+    interface:
+        url: http://139.198.2.158:8081
+        company-id: 1 # 云平台账户的公司Id
+        return-code: 200
+        find-by-car-no: ${wx.interface.url}/wechat/carInfo # 当前停⻋
+        find-arrear-list: ${wx.interface.url}/api/arrears/queryList # 欠费列表
+        find-arrear-detail: ${wx.interface.url}/api/arrears/detailInfo # 欠费详情
+    url:
+        callback: ${wx.domain}/wx/arrear/callback # 回调接口
+        pay: https://api.mch.weixin.qq.com/pay/unifiedorder # 微信支付接口地址

@@ -1,0 +1,37 @@
+# Intellij IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+*/*/*.log
+target/
+*.jar
+*.war
+*.zip
+*.tar
+*.tar.gz
+
+# Windows || Eclipse
+bin
+.classpath
+.project
+.settings/
+build/
+
+# Other
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+catalina.base_IS_UNDEFINED
+Thumbs.db
+.springBeans
+
+_*

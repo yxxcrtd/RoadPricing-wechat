@@ -1,0 +1,48 @@
+<#assign calRelativeTime = "com.igoosd.util.FreemarkerCalRelativeTime"?new()>
+<!doctype html>
+<html lang="en">
+    <head>
+        <#include "Header.html" />
+        <link rel="stylesheet" href="${domain}${request.contextPath}/css/style.css?version=${v}" />
+    </head>
+
+    <body>
+        <div class="page-content">
+            <#if (1 == bindStatus)>
+                <#if map?? && 0 < map?size>
+                    <div class="page-content-main">
+                        <div class="page-content-title">当前停车信息</div>
+                        <div class="page-content-list">车牌号码：${map.carNumber}</div>
+                        <div class="page-content-list">泊位编号：${map.parkingSpaceCode}</div>
+                        <div class="page-content-list">
+                            <div class="page-content-list-left">停车场名称：</div>
+                            <div class="page-content-list-right">${map.parkingName}</div>
+                        </div>
+                        <div class="page-content-list">
+                            <div class="page-content-list-left">停车场位置：</div>
+                            <div class="page-content-list-right">${map.parkingAddress}</div>
+                        </div>
+                        <div class="page-content-list">驶入时间：${map.enterTime}</div>
+                        <div class="page-content-list">当前时间：${map.preExitTime}</div>
+                        <div class="page-content-list">停车时长：${calRelativeTime(map.enterTime, .now?string("yyyy-MM-dd HH:mm:ss"))}</div>
+                    </div>
+                    <br>
+                    <div class="page-content-main1">
+                        <div class="page-content-money-left">应缴金额</div>
+                        <div class="page-content-money-right">${map.realChargeAmount}<span class="yuan">元</span></div>
+                    </div>
+                    <!--<p class="btnable"><a class="btn btn1" href="${domain}${request.contextPath}/${map.id}">去缴费</a></p>-->
+                <#else>
+                    <div class="fee_empty"></div>
+                    <div class="empty_title">没有停车记录哦</div>
+                </#if>
+            <#else>
+                <div class="fee_empty"></div>
+                <div class="fee_empty_title">没有绑定车牌号哦</div>
+                <div class="fee_empty_title"><a href="${request.contextPath}/wx/car?${d?c}#index=3">去绑定 >></a></div>
+            </#if>
+        </div>
+        <#include "Footer.html" />
+        <script type="text/javascript" src="${domain}${request.contextPath}/js/car.js?version=${v}"></script>
+    </body>
+</html>
